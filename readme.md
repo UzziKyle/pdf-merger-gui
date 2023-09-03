@@ -14,4 +14,5 @@ A PDF Merger app for PSU faculties
 ## How to use the app
 1. Enter folder path and click 'Search', or 'Load' from the file explorer
 1. Click 'Merge' to start merging PDF files
-1. After merging, the window will display all the folders that has more than one(1) PDF file and the total pages.
+1. After merging, the window will display all the folders that has its PDF files merged and its total pages
+1. Check the outputs in each folder using the file explorer
