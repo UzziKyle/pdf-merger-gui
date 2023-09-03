@@ -11,7 +11,7 @@ class App(CTk):
     def __init__(self) -> None:
         super().__init__()
         self.title("PDF Merger")
-        self.geometry("800x420")
+        self.geometry("900x420")
         self.resizable(False, False)
 
 
@@ -36,7 +36,7 @@ class MainFrame(CTkFrame):
         btn_merge = CTkButton(frm_search_folder, text="Merge", font=CTkFont(size=15, family="monospace"), **pointy, command=lambda: self.display_folders(scl_display))
         btn_merge.grid(row=1, column=1, sticky='n')
 
-        btn_search = CTkButton(frm_search_folder, text="Search", font=CTkFont(size=15, family="monospace"), width=100, **pointy, command=lambda: self.search_folder(ent_folder_path))
+        btn_search = CTkButton(frm_search_folder, text="Search", font=CTkFont(size=15, family="monospace"), width=150, **pointy, command=lambda: self.search_folder(ent_folder_path))
         btn_search.grid(row=0, column=2, padx=(0, 10), pady=(5, 5), sticky='e')
 
         btn_load_folder = CTkButton(frm_search_folder, text="Load", font=CTkFont(size=15, family="monospace"), width=100, **pointy, command=lambda: self.load_folder(ent_folder_path))
@@ -45,7 +45,7 @@ class MainFrame(CTkFrame):
         frm_display_folders = CTkFrame(self, **pointy, width=700)
         frm_display_folders.pack(pady=(0, 20))
 
-        scl_display = CTkScrollableFrame(frm_display_folders, width=700, height=250, **pointy)
+        scl_display = CTkScrollableFrame(frm_display_folders, width=800, height=250, **pointy)
         scl_display.pack()
 
         btn_clear = CTkButton(frm_display_folders, text="Clear All", **pointy, command=lambda: self.clear_display(scl_display))
@@ -100,21 +100,27 @@ class MainFrame(CTkFrame):
                     files = glob.glob(str_path, recursive=True)
                     number_of_pages = self.merge_pdf(files, os.path.join(folder, 'output.pdf'))
                     if number_of_pages > 0:
-                        lbl = CTkLabel(scl_display, text=f"📁 {folder} {number_of_pages} pages")
+                        lbl_path = CTkLabel(scl_display, text=f"📁 {folder}")
+                        lbl_pages = CTkLabel(scl_display, text=f"{number_of_pages} pages")
                         if count == 1:
-                            lbl.grid(row=count, padx=5, pady=(5,0), sticky='w')
+                            lbl_path.grid(row=count, column=0, padx=5, pady=(5,0), sticky='w')
+                            lbl_pages.grid(row=count, column=1, sticky='e')
                         else:
-                            lbl.grid(row=count, padx=5, sticky='w')
-                            
-                        input.write(f"📁 {folder} {number_of_pages} pages")
+                            lbl_path.grid(row=count, padx=5, sticky='w')
+                            lbl_pages.grid(row=count, column=1, sticky='e')
+
+                        count += 1
+
+                        input.write(f"📁 {folder} {number_of_pages} pages" + "\n")
                         total_pages += number_of_pages
                         print(f"📄 Merged files in {folder}" + "\n")
                     else:
                         print(f"No merging done for {folder}" + "\n")
             
                 count += 1
+                print(count)
                 lbl = CTkLabel(scl_display, text=f'Total Pages: {total_pages}')
-                lbl.grid(row=count, padx=5)
+                lbl.grid(row=count, padx=5, sticky='w')
                 input.write(f'Total Pages: {total_pages}')
 
     def scan_folders(self):
