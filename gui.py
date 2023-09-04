@@ -33,7 +33,7 @@ class MainFrame(CTkFrame):
         ent_folder_path = CTkEntry(frm_search_folder, placeholder_text='Enter folder path or load folder', font=CTkFont(size=13, family="monospace"), width=480, **pointy)
         ent_folder_path.grid(row=0, column=1, padx=(0, 20))
 
-        btn_merge = CTkButton(frm_search_folder, text="Merge", font=CTkFont(size=15, family="monospace"), **pointy, command=lambda: self.display_folders(scl_display))
+        btn_merge = CTkButton(frm_search_folder, text="Merge", font=CTkFont(size=15, family="monospace"), **pointy, command=lambda: self.display_merged(scl_display))
         btn_merge.grid(row=1, column=1, sticky='n')
 
         btn_search = CTkButton(frm_search_folder, text="Search", font=CTkFont(size=15, family="monospace"), width=150, **pointy, command=lambda: self.search_folder(ent_folder_path))
@@ -79,49 +79,50 @@ class MainFrame(CTkFrame):
         for element in scl_display.winfo_children():
             element.destroy()
 
-    def display_folders(self, scl_display) -> None:
+    def display_merged(self, scl_display) -> None:
         if not self.folder_path.endswith(os.path.sep):
             self.folder_path += os.path.sep
-
+        
         print(self.folder_path)
+
         now = datetime.now()
     
-        file_path = f"{self.folder_path}{now.strftime('%Y%m%d_%H%M%S')} merge details.txt"
+        file_path = f"{self.folder_path} {now.strftime('%Y-%m-%d_%H%M%S')} merge details.txt"
 
-        if self.folder_path != '\\':
-            with open(file_path, mode="w", encoding='utf-8') as input:
-                roots_not_empty = self.scan_folders()
-                count = 0
-                total_pages = 0
+        roots_not_empty = self.scan_folders()
+        print(roots_not_empty)
+        count = 0
 
-                for folder in roots_not_empty:
-                    str_path = os.path.join(folder, '*.pdf')  # Use os.path.join for paths
-                    print(f"Merging files in {folder}...")
-                    files = glob.glob(str_path, recursive=True)
-                    number_of_pages = self.merge_pdf(files, os.path.join(folder, 'output.pdf'))
-                    if number_of_pages > 0:
-                        lbl_path = CTkLabel(scl_display, text=f"📁 {folder}")
-                        lbl_pages = CTkLabel(scl_display, text=f"{number_of_pages} pages")
-                        if count == 1:
-                            lbl_path.grid(row=count, column=0, padx=5, pady=(5,0), sticky='w')
-                            lbl_pages.grid(row=count, column=1, sticky='e')
-                        else:
-                            lbl_path.grid(row=count, padx=5, sticky='w')
-                            lbl_pages.grid(row=count, column=1, sticky='e')
-
-                        count += 1
-
-                        input.write(f"📁 {folder} {number_of_pages} pages" + "\n")
-                        total_pages += number_of_pages
-                        print(f"📄 Merged files in {folder}" + "\n")
-                    else:
-                        print(f"No merging done for {folder}" + "\n")
+        if roots_not_empty:
             
-                count += 1
-                print(count)
-                lbl = CTkLabel(scl_display, text=f'Total Pages: {total_pages}')
-                lbl.grid(row=count, padx=5, sticky='w')
-                input.write(f'Total Pages: {total_pages}')
+            file = open(file_path, 'a', encoding='utf-8')
+            for folder in roots_not_empty:
+                str_path = os.path.join(folder, '*.pdf')  # Use os.path.join for paths
+
+                print(f"Merging files in {folder}...")
+
+                files = glob.glob(str_path, recursive=True)
+
+                number_of_pages = self.merge_pdf(files, os.path.join(folder, 'output.pdf'))
+
+                if number_of_pages > 0:
+                    lbl_path = CTkLabel(scl_display, text=f"📁 {folder}")
+                    lbl_pages = CTkLabel(scl_display, text=f"=> {number_of_pages} pages")
+                    if count == 1:
+                        lbl_path.grid(row=count, column=0, padx=5, pady=(5,0), sticky='w')
+                        lbl_pages.grid(row=count, column=1, sticky='e')
+                    else:
+                        lbl_path.grid(row=count, column=0, padx=5, sticky='w')
+                        lbl_pages.grid(row=count, column=1, sticky='e')
+
+                    count += 1
+
+                    file.write(f"{folder} => {number_of_pages} pages" + "\n")
+                    print(f"📄 Merged files in {folder}" + "\n")
+                else:
+                    file.write(f"No merging done for {folder}" + "\n")
+                    print(f"No merging done for {folder}" + "\n")
+            file.close()
 
     def scan_folders(self):
         list_roots = []
