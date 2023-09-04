@@ -5,6 +5,8 @@ from datetime import datetime
 from PyPDF2 import PdfMerger
 from customtkinter import *
 
+set_default_color_theme("dark-blue")
+
 pointy = {'corner_radius': 0}  # To remove round corners
 
 class App(CTk):
@@ -53,7 +55,7 @@ class MainFrame(CTkFrame):
 
     def toggle_appearance(self) -> None:
         current = get_appearance_mode()
-        print(current)
+
         if current == "Light":
             set_appearance_mode("Dark")
             return
@@ -90,12 +92,11 @@ class MainFrame(CTkFrame):
         file_path = f"{self.folder_path} {now.strftime('%Y-%m-%d_%H%M%S')} merge details.txt"
 
         roots_not_empty = self.scan_folders()
-        print(roots_not_empty)
-        count = 0
 
         if roots_not_empty:
-            
             file = open(file_path, 'a', encoding='utf-8')
+            count = 0
+
             for folder in roots_not_empty:
                 str_path = os.path.join(folder, '*.pdf')  # Use os.path.join for paths
 
@@ -108,9 +109,11 @@ class MainFrame(CTkFrame):
                 if number_of_pages > 0:
                     lbl_path = CTkLabel(scl_display, text=f"📁 {folder}")
                     lbl_pages = CTkLabel(scl_display, text=f"=> {number_of_pages} pages")
+
                     if count == 1:
                         lbl_path.grid(row=count, column=0, padx=5, pady=(5,0), sticky='w')
                         lbl_pages.grid(row=count, column=1, sticky='e')
+
                     else:
                         lbl_path.grid(row=count, column=0, padx=5, sticky='w')
                         lbl_pages.grid(row=count, column=1, sticky='e')
@@ -119,6 +122,7 @@ class MainFrame(CTkFrame):
 
                     file.write(f"{folder} => {number_of_pages} pages" + "\n")
                     print(f"📄 Merged files in {folder}" + "\n")
+
                 else:
                     file.write(f"No merging done for {folder}" + "\n")
                     print(f"No merging done for {folder}" + "\n")
