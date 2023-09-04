@@ -1,4 +1,4 @@
-build\*
-dist\*
-* .spec 
-* .iss
+build/
+dist/
+*.spec 
+*.iss
