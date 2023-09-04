@@ -5,9 +5,11 @@ from datetime import datetime
 from PyPDF2 import PdfMerger
 from customtkinter import *
 
+set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 set_default_color_theme("dark-blue")
 
 pointy = {'corner_radius': 0}  # To remove round corners
+
 
 class App(CTk):
     def __init__(self) -> None:
@@ -35,13 +37,13 @@ class MainFrame(CTkFrame):
         ent_folder_path = CTkEntry(frm_search_folder, placeholder_text='Enter folder path or load folder', font=CTkFont(size=13, family="monospace"), width=480, **pointy)
         ent_folder_path.grid(row=0, column=1, padx=(0, 20))
 
-        btn_merge = CTkButton(frm_search_folder, text="Merge", font=CTkFont(size=15, family="monospace"), **pointy, command=lambda: self.display_merged(scl_display))
+        btn_merge = CTkButton(frm_search_folder, text="Merge", font=CTkFont(size=15, family="monospace"), width=120, **pointy, command=lambda: self.display_merged(scl_display))
         btn_merge.grid(row=1, column=1, sticky='n')
 
         btn_search = CTkButton(frm_search_folder, text="Search", font=CTkFont(size=15, family="monospace"), width=150, **pointy, command=lambda: self.search_folder(ent_folder_path))
         btn_search.grid(row=0, column=2, padx=(0, 10), pady=(5, 5), sticky='e')
 
-        btn_load_folder = CTkButton(frm_search_folder, text="Load", font=CTkFont(size=15, family="monospace"), width=100, **pointy, command=lambda: self.load_folder(ent_folder_path))
+        btn_load_folder = CTkButton(frm_search_folder, text="Load", font=CTkFont(size=15, family="monospace"), width=150, **pointy, command=lambda: self.load_folder(ent_folder_path))
         btn_load_folder.grid(row=1, column=2, padx=(0, 10), pady=(0, 5), sticky='e')
 
         frm_display_folders = CTkFrame(self, **pointy, width=700)
@@ -82,11 +84,11 @@ class MainFrame(CTkFrame):
             element.destroy()
 
     def display_merged(self, scl_display) -> None:
+        self.clear_display(scl_display)
+
         if not self.folder_path.endswith(os.path.sep):
             self.folder_path += os.path.sep
         
-        print(self.folder_path)
-
         now = datetime.now()
     
         file_path = f"{self.folder_path} {now.strftime('%Y-%m-%d_%H%M%S')} merge details.txt"
@@ -110,22 +112,22 @@ class MainFrame(CTkFrame):
                     lbl_path = CTkLabel(scl_display, text=f"📁 {folder}")
                     lbl_pages = CTkLabel(scl_display, text=f"=> {number_of_pages} pages")
 
-                    if count == 1:
-                        lbl_path.grid(row=count, column=0, padx=5, pady=(5,0), sticky='w')
-                        lbl_pages.grid(row=count, column=1, sticky='e')
-
-                    else:
-                        lbl_path.grid(row=count, column=0, padx=5, sticky='w')
-                        lbl_pages.grid(row=count, column=1, sticky='e')
+                    lbl_path.grid(row=count, column=0, padx=5, pady=(5, 0), sticky='w')
+                    lbl_pages.grid(row=count, column=1, sticky='e')
 
                     count += 1
 
-                    file.write(f"{folder} => {number_of_pages} pages" + "\n")
+                    file.write(f"📁 {folder} => {number_of_pages} pages" + "\n")
                     print(f"📄 Merged files in {folder}" + "\n")
 
                 else:
                     file.write(f"No merging done for {folder}" + "\n")
                     print(f"No merging done for {folder}" + "\n")
+
+            if count == 0:
+                lbl_no_files = CTkLabel(scl_display, text='No files to merge...')
+                lbl_no_files.grid(row=count, column=0, padx=5,  pady=(5, 0), sticky='w')
+                    
             file.close()
 
     def scan_folders(self):
