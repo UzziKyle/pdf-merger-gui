@@ -55,15 +55,15 @@ class MainFrame(CTkFrame):
         btn_clear = CTkButton(frm_display_folders, text="Clear All", **pointy, command=lambda: self.clear_display(scl_display))
         btn_clear.pack(fill="x")
 
-    def toggle_appearance(self) -> None:
+    @staticmethod
+    def toggle_appearance() -> None:
         current = get_appearance_mode()
 
         if current == "Light":
             set_appearance_mode("Dark")
             return
         
-        else:
-            set_appearance_mode("Light")
+        set_appearance_mode("Light")
 
     def search_folder(self, ent_folder_path) -> None:
         self.folder_path = ent_folder_path.get()
@@ -79,12 +79,15 @@ class MainFrame(CTkFrame):
         
         ent_folder_path.insert(END, self.folder_path)
 
-    def clear_display(self, scl_display) -> None:
+    @staticmethod
+    def clear_display(scl_display) -> None:
         for element in scl_display.winfo_children():
             element.destroy()
 
     def display_merged(self, scl_display) -> None:
         self.clear_display(scl_display)
+
+        if not self.folder_path: return
 
         if not self.folder_path.endswith(os.path.sep):
             self.folder_path += os.path.sep
